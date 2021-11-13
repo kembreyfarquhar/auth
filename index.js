@@ -39,11 +39,11 @@ server.post("/login", async (req, res) => {
       res.status(400).json({ message: "must include username and password" });
     }
     const foundUser = await db("users").where({ username }).first();
-    if (!bcrypt.compareSync(foundUser.password, password)) {
-      res.status(400).json({ message: "invalid credentials" });
-    } else {
+    if (bcrypt.compareSync(password, foundUser.password)) {
       delete foundUser.password;
       res.status(200).json(foundUser);
+    } else {
+      res.status(400).json({ message: "invalid credentials" });
     }
   } catch (err) {
     res.status(500).json(err);
